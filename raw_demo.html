@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>leooo — raw_demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Caveat:wght@400;600&family=Courier+Prime&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --cream: #f0ebe0;
+    --dark: #1a1612;
+    --ink: #2c2318;
+    --faded: #8a7d6b;
+    --tape: #d4c9a8;
+    --red: #8b2020;
+  }
+
+  body {
+    background-color: var(--cream);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier Prime', monospace;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Papier-Textur */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.6;
+  }
+
+  /* Schmuddelige Ränder */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at top left, rgba(26,22,18,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(26,22,18,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(26,22,18,0.1) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  .page {
+    position: relative;
+    width: min(520px, 92vw);
+    padding: 3rem 2.5rem 2.5rem;
+    z-index: 1;
+  }
+
+  /* Tape oben */
+  .tape {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-1.5deg);
+    width: 80px;
+    height: 28px;
+    background: var(--tape);
+    opacity: 0.75;
+    border-radius: 2px;
+  }
+  .tape::before {
+    content: '';
+    position: absolute;
+    inset: 4px 6px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* Notizzettel-Hintergrund */
+  .card {
+    position: relative;
+    background: #f7f2e6;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 3rem 2.5rem 2.8rem;
+    box-shadow: 
+      3px 4px 0px rgba(0,0,0,0.06),
+      6px 8px 20px rgba(0,0,0,0.08),
+      inset 0 0 40px rgba(0,0,0,0.015);
+    transform: rotate(-0.5deg);
+  }
+
+  /* Linierte Linien im Hintergrund */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      rgba(0,0,0,0.04) 27px,
+      rgba(0,0,0,0.04) 28px
+    );
+    background-position: 0 48px;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .artist {
+    font-family: 'Caveat', cursive;
+    font-size: 1rem;
+    color: var(--faded);
+    letter-spacing: 0.15em;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
+  .title {
+    font-family: 'Special Elite', cursive;
+    font-size: clamp(2.2rem, 8vw, 3rem);
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Durchgestrichene Linie über Titel — wie korrigiert */
+  .title::after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    right: -4px;
+    top: 50%;
+    height: 2px;
+    background: var(--red);
+    opacity: 0.25;
+    transform: rotate(-1deg);
+  }
+
+  .divider {
+    width: 40px;
+    height: 2px;
+    background: var(--ink);
+    opacity: 0.2;
+    margin-bottom: 1.8rem;
+  }
+
+  .tagline {
+    font-family: 'Caveat', cursive;
+    font-size: 1.35rem;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    font-weight: 600;
+    position: relative;
+  }
+
+  /* kleiner Kreis-Stempel */
+  .stamp {
+    position: absolute;
+    right: -10px;
+    top: -30px;
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(12deg);
+    opacity: 0.35;
+  }
+  .stamp span {
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.45rem;
+    color: var(--red);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+  }
+
+  .meta {
+    font-size: 0.7rem;
+    color: var(--faded);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 2.2rem;
+    opacity: 0.7;
+  }
+
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'Courier Prime', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.85rem 1.6rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    transform: rotate(0.5deg);
+  }
+
+  .download-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--red);
+    transform: translate(3px, 3px);
+    z-index: -1;
+    opacity: 0.4;
+  }
+
+  .download-btn:hover {
+    transform: rotate(0.5deg) translate(-1px, -1px);
+    background: #0d0b09;
+  }
+  .download-btn:hover::before {
+    transform: translate(5px, 5px);
+  }
+
+  .download-btn:active {
+    transform: rotate(0.5deg) translate(2px, 2px);
+  }
+
+  .arrow {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .footer-note {
+    margin-top: 2rem;
+    font-size: 0.65rem;
+    color: var(--faded);
+    opacity: 0.6;
+    letter-spacing: 0.05em;
+    font-family: 'Courier Prime', monospace;
+  }
+
+  /* Handschriftliche Randnotiz */
+  .margin-note {
+    position: absolute;
+    right: -3.5rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Caveat', cursive;
+    font-size: 0.75rem;
+    color: var(--faded);
+    opacity: 0.45;
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+
+  /* Zerrissene Ecke */
+  .torn-corner {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 32px 32px;
+    border-color: transparent transparent var(--cream) transparent;
+    filter: drop-shadow(-2px -2px 2px rgba(0,0,0,0.06));
+  }
+
+  /* Fade-in Animation */
+  .card {
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: rotate(-0.5deg) translateY(12px); }
+    to { opacity: 1; transform: rotate(-0.5deg) translateY(0); }
+  }
+
+  /* kleines Schmutzelement */
+  .smudge {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, rgba(139,112,80,0.08), transparent 70%);
+    border-radius: 50%;
+    bottom: 60px;
+    left: 20px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="tape"></div>
+  <div class="card">
+    <div class="smudge"></div>
+    <div class="margin-note">nicht für alle — leooo</div>
+    <div class="torn-corner"></div>
+
+    <span class="artist">leooo</span>
+    <h1 class="title">raw_demo</h1>
+    <div class="divider"></div>
+
+    <p class="tagline" style="position:relative;">
+      hat es nicht geschafft.<br>gehört dir trotzdem.
+      <span class="stamp"><span>nicht<br>fertig<br>2026</span></span>
+    </p>
+
+    <p class="meta">demo / unveröffentlicht / nur hier</p>
+
+    <a href="DEIN_DOWNLOAD_LINK_HIER" class="download-btn" download>
+      <span class="arrow">↓</span>
+      herunterladen
+    </a>
+
+    <p class="footer-note">
+      keine streams. keine playlists. einfach eine datei.
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
